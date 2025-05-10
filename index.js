@@ -8,6 +8,21 @@ const Movie = require("./models/movie.models")
 app.use(express.json())
 initializeDatabase()
 
+async function readAllMovies() {
+    const movies = Movie.find()
+    return movies
+}
+
+app.get("/movies", async(req,res) =>{
+  try{
+        const allMovies = await readAllMovies()
+        res.json(allMovies)
+        console.log(allMovies)
+        res.status(200).json({message: "Movies fetched succesfully."})
+    } catch (error){
+        res.status(500).json({error: "Failed to fetch movies."})
+        }
+})
 
 //Adding data to database using POSTMAN
 
