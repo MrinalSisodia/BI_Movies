@@ -1,9 +1,6 @@
 const express = require("express")
 const app = express();
 
-
-app.use(cors(corsOptions));
-
 const {initializeDatabase} = require ("./db/db.connect")
 const Movie = require("./models/movie.models")
 
