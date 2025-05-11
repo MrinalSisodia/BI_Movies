@@ -1,8 +1,14 @@
 const express = require("express")
-const cors = require("cors");
-const app = express();
-app.use(cors());
 
+const app = express();
+const cors = require("cors");
+const corsOptions = {
+  origin: "*",
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 const {initializeDatabase} = require ("./db/db.connect")
 const Movie = require("./models/movie.models")
 
@@ -10,20 +16,44 @@ app.use(express.json())
 initializeDatabase()
 
 async function readAllMovies() {
-    const movies = Movie.find()
+    const movies = await Movie.find()
     return movies
 }
 
 app.get("/movies", async(req,res) =>{
   try{
         const allMovies = await readAllMovies()
-        res.json(allMovies)
-        res.status(200).json({message: "Movies fetched succesfully."})
+        if(allMovies){
+          res.json(allMovies)
+        }else{
+        res.status(404).json({error: "Movies not found."})
+        }
     } catch (error){
         res.status(500).json({error: "Failed to fetch movies."})
         }
 })
 
+
+async function readMovieByTitle(movieTitle) {
+    try {
+         const movieByTitle = await Movie.findOne({title: movieTitle})
+    return movieByTitle
+    } catch (error) {
+     throw error
+    }
+   
+}
+
+app.get("/movies/:movieTitle", async(req,res) =>{
+    try {
+        const movie = await readMovieByTitle(req.params.movieTitle)
+        if(movie){
+res.json(movie)
+        } else{ res.status(404).json({error: "Movie not found."})}  
+    } catch (error) {
+        res.status(500).json({error: "Failed to fetch movie."})
+    }
+})
 //Adding data to database using POSTMAN
 
 async function createMovie(newMovie){
