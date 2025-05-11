@@ -1,7 +1,13 @@
 const express = require("express")
-const cors = require("cors");
 const app = express();
-app.use(cors());
+const cors = require("cors");
+const corsOptions = {
+  origin: "*",
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 
 const {initializeDatabase} = require ("./db/db.connect")
 const Movie = require("./models/movie.models")
